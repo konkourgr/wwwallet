@@ -6,25 +6,12 @@
 ./scripts/gen-dsc-keys.sh example wallet_verifier
 ./scripts/gen-dsc-keys.sh example wallet_as
 
-# The backend now tracks config/index.ts and reads its settings from .env.
-cat <<EOF > wallet-backend-server/.env
-APP_URL=http://localhost:8002
-APP_SECRET=dsfkwfkwfwdfdsfSaSe2e34r4frwr42rAFdsf2lfmfsmklfwmer
-PORT=8002
-DB_HOST=localhost
-DB_PORT=3307
-DB_USER=root
-DB_PASSWORD=root
-DB_NAME=wallet_single_key
-WALLET_CLIENT_URL=http://localhost:3000/cb
-WEBAUTHN_ORIGIN=http://localhost:3000
-WEBAUTHN_RP_ID=localhost
-WEBAUTHN_RP_NAME=Digital Wallet demo
-NOTIFICATIONS_ENABLED=false
-KEYS_DIR=$PWD/wallet-backend-server/keys
-OHTTP_GATEWAY_URL=http://localhost:4567
-PREVIEW_SIGN_ENABLED=true
-EOF
+# Use upstream's template and generated secret with the single-key defaults.
+sed -e "s/^APP_SECRET=.*/APP_SECRET=$(openssl rand -hex 32)/" \
+  -e 's/^DB_NAME=.*/DB_NAME=wallet_single_key/' \
+  -e 's/^PREVIEW_SIGN_ENABLED=.*/PREVIEW_SIGN_ENABLED=true/' \
+  wallet-backend-server/.env.template > wallet-backend-server/.env
+echo "KEYS_DIR=$PWD/wallet-backend-server/keys" >> wallet-backend-server/.env
 
 cp wallet-frontend/.env.template wallet-frontend/.env
 cp wallet-issuer/.env.template wallet-issuer/.env
@@ -65,7 +52,7 @@ touch ./wallet-as/certs/.keep
 cp scripts/keystore/wallet_as_example_wwwallet_org.pem ./wallet-as/keys/pem.crt
 cp scripts/keystore/wallet_as_example_wwwallet_org.key.pkcs8 ./wallet-as/keys/pem.key
 cp scripts/keystore/wwwallet_org_iaca.pem ./wallet-as/certs/wwwallet_org_iaca.pem
-./scripts/gen-oidc-jwks.sh ./wallet-as/keys/oidc.jwks.json --force
+./scripts/gen-oidc-jwks.sh ./wallet-as/keys/oidc.jwks.json
 
 # Copy wallet backend server certificates and keys
 mkdir -p ./wallet-backend-server/keys/
