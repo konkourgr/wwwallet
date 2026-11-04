@@ -13,43 +13,44 @@ else
     echo "Run: git submodule update --init --recursive privacy-gateway-server-go"
 fi
 
-SERVICE=wallet-db
-echo "Waiting for $SERVICE to be healthy..."
-while true; do
-    STATUS=$(docker inspect --format='{{.State.Health.Status}}' ${SERVICE})
+wait_for_health() {
+    local service="$1"
+    local container_id status
+    local deadline=$((SECONDS + 180))
 
-    if [ "$STATUS" == "healthy" ]; then
-        echo "$SERVICE is healthy!"
-        break
-    fi
+    echo "Waiting for $service to be healthy..."
+    while (( SECONDS < deadline )); do
+        container_id=$(docker compose ps --all --quiet "$service")
+        if [ -z "$container_id" ]; then
+            echo "No container found for Compose service $service."
+            return 1
+        fi
 
-    if [ "$STATUS" == "unhealthy" ]; then
-        echo "$SERVICE failed to become healthy."
-        exit 1
-    fi
+        status=$(docker inspect --format='{{.State.Status}} {{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$container_id")
+        case "$status" in
+            "running healthy")
+                echo "$service is healthy!"
+                return 0
+                ;;
+            "running starting"|"created "*)
+                echo "$service status: $status"
+                ;;
+            *)
+                echo "$service failed to become healthy (status: $status)."
+                echo "Check logs with: docker compose logs $service"
+                return 1
+                ;;
+        esac
+        sleep 2
+    done
 
-    echo "Current status: $STATUS"
-    sleep 2
-done
+    echo "Timed out waiting for $service to become healthy."
+    echo "Check logs with: docker compose logs $service"
+    return 1
+}
 
-SERVICE=kv-store
-echo "Waiting for $SERVICE to be healthy..."
-while true; do
-    STATUS=$(docker inspect --format='{{.State.Health.Status}}' ${SERVICE})
-
-    if [ "$STATUS" == "healthy" ]; then
-        echo "$SERVICE is healthy!"
-        break
-    fi
-
-    if [ "$STATUS" == "unhealthy" ]; then
-        echo "$SERVICE failed to become healthy."
-        exit 1
-    fi
-
-    echo "Current status: $STATUS"
-    sleep 2
-done
+wait_for_health wallet-db
+wait_for_health kv-store
 
 yarn concurrently \
     --names "wallet-frontend,wallet-backend-server,wallet-issuer,wallet-verifier,vct-registry,wallet-as" \

@@ -2,6 +2,22 @@
 
 wwWallet is a modular reference implementation for verifiable credentials, providing an end-to-end stack: a browser-based web wallet (with WebAuthn support), an OpenID4VCI credential issuer, an OpenID4VP verifier, an OIDC authorization server, and a shared TypeScript library of protocol helpers and utilities for integration and testing.
 
+## Experimental previewSign with one shared passkey
+
+This checkout is on `previewSign-single-key`. A newly created passkey requests PRF and previewSign together: one credential ID authenticates, unlocks the encrypted wallet, and authorizes ARKG signing. The PRF and signing secrets remain separate. See [the setup and test guide](wallet-frontend/docs/preview-sign.md).
+
+The `previewSign` and `master` branch tips are unchanged. This branch uses `wallet_single_key` for the backend database. The single-key schema differs from the separate-credential prototype and is intended for fresh test wallets. It does not migrate existing signing registrations.
+
+```sh
+docker compose up -d wallet-db
+docker compose exec -T wallet-db mariadb --protocol=TCP -h127.0.0.1 -P3307 -uroot -proot \
+  -e 'CREATE DATABASE IF NOT EXISTS wallet_single_key'
+yarn init-db
+yarn start
+```
+
+Hardware signing defaults to enabled; both local environments set `PREVIEW_SIGN_ENABLED=true`. Registration automatically tests and activates ARKG signing with the same passkey. No separate Settings action is needed. Stop the original development services before starting this checkout on the same ports. `scripts/init-db.js` seeds the database named by this checkout's backend `.env`.
+
 ## 📦 Modules
 - `wallet-frontend` — Wallet frontend ([wallet-frontend/README.md](https://github.com/wwWallet/wallet-frontend/blob/master/README.md))
 - `wallet-backend-server` — Wallet backend and DB ([wallet-backend-server/README.md](https://github.com/wwWallet/wallet-backend-server/blob/master/README.md))
