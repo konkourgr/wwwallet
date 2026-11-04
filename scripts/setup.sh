@@ -6,7 +6,7 @@
 ./scripts/gen-dsc-keys.sh example wallet_verifier
 ./scripts/gen-dsc-keys.sh example wallet_as
 
-cp wallet-backend-server/config/config.template.ts  wallet-backend-server/config/index.ts
+# The backend now tracks config/index.ts and reads its settings from .env.
 cat <<EOF > wallet-backend-server/.env
 APP_URL=http://localhost:8002
 APP_SECRET=dsfkwfkwfwdfdsfSaSe2e34r4frwr42rAFdsf2lfmfsmklfwmer
@@ -23,6 +23,7 @@ WEBAUTHN_RP_NAME=Digital Wallet demo
 NOTIFICATIONS_ENABLED=false
 KEYS_DIR=$PWD/wallet-backend-server/keys
 OHTTP_GATEWAY_URL=http://localhost:4567
+PREVIEW_SIGN_ENABLED=true
 EOF
 
 cp wallet-frontend/.env.template wallet-frontend/.env
