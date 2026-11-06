@@ -1,27 +1,27 @@
 [submodule "lib/wallet-common"]
 	path = lib/wallet-common
-	url = git@github.com:wwWallet/wallet-common.git
+	url = git@github.com:konkourgr/wallet-common.git
 [submodule "wallet-frontend"]
 	path = wallet-frontend
-	url = git@github.com:wwWallet/wallet-frontend.git
+	url = git@github.com:konkourgr/wallet-frontend.git
 [submodule "wallet-as"]
 	path = wallet-as
-	url = git@github.com:wwWallet/wallet-as.git
+	url = git@github.com:konkourgr/wallet-as.git
 [submodule "wallet-issuer"]
 	path = wallet-issuer
-	url = git@github.com:wwWallet/wallet-issuer.git
+	url = git@github.com:konkourgr/wallet-issuer.git
 [submodule "wallet-backend-server"]
 	path = wallet-backend-server
-	url = git@github.com:wwWallet/wallet-backend-server.git
+	url = git@github.com:konkourgr/wallet-backend-server.git
 [submodule "wallet-verifier"]
 	path = wallet-verifier
-	url = git@github.com:wwWallet/wallet-verifier.git
+	url = git@github.com:konkourgr/wallet-verifier.git
 [submodule "vct-registry"]
 	path = vct-registry
-	url = git@github.com:wwWallet/vct-registry.git
+	url = git@github.com:konkourgr/vct-registry.git
 [submodule "privacy-gateway-server-go"]
 	path = privacy-gateway-server-go
-	url = https://github.com/gunet/privacy-gateway-server-go.git
+	url = git@github.com:konkourgr/privacy-gateway-server-go.git
 [submodule "wallet-docs"]
 	path = wallet-docs
 	url = git@github.com:wwWallet/wallet-docs.git
